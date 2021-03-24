@@ -244,6 +244,7 @@ export async function getServerSideProps(ctx) {
     console.log('messagesxxx: ', messages)
   }catch(e){
     error = 1;
+    console.log("error ",e);
   }
 
 
