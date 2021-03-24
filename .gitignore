@@ -14,6 +14,7 @@
 
 # production
 /build
+/public/AdminLTE-master
 
 # misc
 .DS_Store

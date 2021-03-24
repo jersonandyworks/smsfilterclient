@@ -1,20 +1,14 @@
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import {useRouter} from "next/router";
 import axios from "../config/axios.config";
 import cookies from "next-cookies";
-// export async function getStaticProps({ req, res }) {
-//   const data = await axios.get("/messages");
-//   console.log(data.data);
-//   const cookie = new Cookies();
-//   console.log("cookie: ", cookie.get("userData"));
-//   return {
-//     props: { data: data.data },
-//   };
-// }
 
 function Home({ messages }) {
+  const router = useRouter();
   console.log(messages);
+  console.log(JSON.parse(localStorage.getItem("user")))
   return (
     <div className="container">
       <Head>
@@ -34,6 +28,11 @@ function Home({ messages }) {
         <h1 className="title">
           <Link href="/uploads/file-upload">Upload a File</Link>
         </h1>
+        <a href="/login" onClick={(e) => {
+          e.preventDefault();
+          document.cookie ="userData=;"
+          router.push("/login")
+        }}>Logout</a>
         <div id="body">
           <ul>
             {messages.map((message, i) => (

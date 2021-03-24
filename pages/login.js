@@ -1,33 +1,28 @@
 import Head from "next/head";
 import Link from "next/link";
 import axios from "../config/axios.config";
-import cookies from "next-cookies";
+import {useRouter} from "next/router";
 
-export default function Form() {
+function Form() {
+  const router = useRouter();
   const loginUser = async (event) => {
     event.preventDefault();
-
-    const res = axios
+   
+      const res = await axios
       .post("/auth/local", {
         identifier: event.target.name.value,
         password: event.target.password.value,
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      .then((response) => {
-        console.log("response: ", response);
-        const userData = {
-          username: response.data.user.username,
-          jwt: response.data.jwt,
-        };
-
-        document.cookie = "userData=" + userData.jwt;
-        localStorage.setItem("userData", userData);
-      })
-      .catch((error) => {
-        console.log(error.response);
       });
+      const userData = res.data;
+      const jwt = userData.jwt;
+      document.cookie = "userData=" + jwt;
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      console.log("res: ", res);
+      router.push("/")
+      
   };
 
   return (
@@ -53,3 +48,6 @@ export default function Form() {
     </form>
   );
 }
+
+
+export default Form;
