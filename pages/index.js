@@ -228,27 +228,27 @@ export async function getServerSideProps(ctx) {
   const jwt = cookies(ctx).userData;
   let res = "";
   let error = 0;
-  try {
-    const messages = await axios.get("/messages", {
-      headers: { Authorization: "Bearer " + jwt },
-    });
+  // try {
+  //   const messages = await axios.get("/messages", {
+  //     headers: { Authorization: "Bearer " + jwt },
+  //   });
 
-    res = messages.data;
+  //   res = messages.data;
 
-    console.log("res: ", res);
-  } catch (e) {
-    res = [];
-    error = 1;
-  }
-  if (error === 0) {
-    return { props: { messages: res } };
-  } else {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
+  //   console.log("res: ", res);
+  // } catch (e) {
+  //   res = [];
+  //   error = 1;
+  // }
+  // if (error === 0) {
+  //   return { props: { messages: res } };
+  // } else {
+  //   return {
+  //     redirect: {
+  //       destination: "/login",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 }
 export default Home;
