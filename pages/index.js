@@ -228,6 +228,7 @@ export async function getServerSideProps(ctx) {
   const jwt = cookies(ctx).userData;
   let res = "";
   let error = 0;
+  
   // try {
   //   const messages = await axios.get("/messages", {
   //     headers: { Authorization: "Bearer " + jwt },
