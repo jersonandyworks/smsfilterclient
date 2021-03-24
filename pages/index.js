@@ -3,12 +3,16 @@ import Link from "next/link";
 import Image from "next/image";
 import {useRouter} from "next/router";
 import axios from "../config/axios.config";
-import cookies from "next-cookies";
+import nookies, { parseCookies, setCookie, destroyCookie } from 'nookies'
+
 
 function Home({ messages }) {
   const router = useRouter();
-  console.log(messages);
-  console.log(JSON.parse(localStorage.getItem("user")))
+  const cookies = parseCookies()
+  console.log({ cookies })
+  console.log("messages: ", messages);
+
+
   return (
     <div className="container">
       <Head>
@@ -224,25 +228,21 @@ function Home({ messages }) {
 //   return { messages: data };
 // };
 export async function getServerSideProps(ctx) {
-  console.log(cookies(ctx).userData);
-  const jwt = cookies(ctx).userData;
-  let res = "";
+  const cookies = nookies.get(ctx)
+  let res = [];
   let error = 0;
 
-  return {
-    props: {messages: []}
-  }
-  
-  try {
+  try{
+    console.log('coookies: ', cookies)
     const messages = await axios.get("/messages", {
-      headers: { Authorization: "Bearer " + jwt },
+      headers: { Authorization: "Bearer " + cookies.userData },
     });
-
+  
+  
+  
     res = messages.data;
-
-    console.log("res: ", res);
-  } catch (e) {
-    res = [];
+    console.log('messagesxxx: ', messages)
+  }catch(e){
     error = 1;
   }
 
