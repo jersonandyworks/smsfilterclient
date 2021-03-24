@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
+import nookies,{ parseCookies, setCookie, destroyCookie } from "nookies";
 import axios from "../config/axios.config";
 import {useRouter} from "next/router";
 
@@ -18,9 +18,7 @@ function Form() {
       });
       const userData = res.data;
       const jwt = userData.jwt;
-      document.cookie = "userData=" + jwt;
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      console.log("res: ", res);
+      setCookie(null,"userData", jwt);
       router.push("/")
       
   };
