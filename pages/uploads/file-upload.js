@@ -68,7 +68,7 @@ export default function FileUpload() {
         <h1>
           {" "}
           {isUploading
-            ? "Uploading..."
+            ? "Uploading... " + percent + "%"
             : percent === 100
             ? "File Uploaded successfully!"
             : "Upload file!"}{" "}
