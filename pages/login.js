@@ -3,17 +3,17 @@ import nookies,{ parseCookies, setCookie, destroyCookie } from "nookies";
 import axios from "../config/axios.config";
 import {useRouter} from "next/router";
 
+
 function Form() {
   const router = useRouter();
   const loginUser = async (event) => {
     event.preventDefault();
-   
       const res = await axios
       .post("/auth/local", {
         identifier: event.target.name.value,
         password: event.target.password.value,
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "multipart/form-data"
         },
       });
       const userData = res.data;
