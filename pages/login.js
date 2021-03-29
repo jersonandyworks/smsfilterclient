@@ -11,10 +11,7 @@ function Form() {
       const res = await axios
       .post("/auth/local", {
         identifier: event.target.name.value,
-        password: event.target.password.value,
-        headers: {
-          "content-type": "multipart/form-data"
-        },
+        password: event.target.password.value
       });
       const userData = res.data;
       const jwt = userData.jwt;
@@ -43,6 +40,7 @@ function Form() {
         required
       />
       <button type="submit">Login</button>
+      <a href="/download-report">Download Reports</a>
     </form>
   );
 }
