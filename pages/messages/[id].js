@@ -22,6 +22,7 @@ const Messages = ({ uploads }) => {
         <div className="card" style={{ paddingTop: "2%" }}>
           <div className="card-header">
             <h3 className="card-title">Clean Records</h3>
+            &nbsp;<Link href="/"><a>&laquo; Back</a></Link>
           </div>
 
           <div className="card-body">

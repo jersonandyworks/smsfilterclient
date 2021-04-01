@@ -4,11 +4,13 @@ import { useState } from "react";
 import styles from "../../components/layout.module.css";
 import axios from "../../config/axios.config";
 import nookies, { parseCookies, setCookie, destroyCookie } from "nookies";
+import { useRouter } from "next/router";
 import NavAdmin from "../../components/nav";
 import Layout from "../../components/layout";
 
 export default function FileUpload() {
   const cookies = parseCookies();
+  const router = useRouter();
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -30,6 +32,7 @@ export default function FileUpload() {
   };
 
   const handleSubmit = async (e) => {
+    const cookies = parseCookies();
     e.preventDefault();
     setIsUploading(true);
     console.log("!@#!@#!#: fileName", fileName);
@@ -37,7 +40,7 @@ export default function FileUpload() {
     formData.append("files", selectedFile);
 
     const uploadedData = await axios.post("/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "multipart/form-data",  'Authorization': 'Bearer ' + cookies.userData},
     });
 
     console.log("uploadedData: ", uploadedData);
@@ -57,6 +60,7 @@ export default function FileUpload() {
             setPercent(percentage);
             if (percentage === 100) {
               setIsUploading(false);
+              router.push("/");
             }
           },
         }
