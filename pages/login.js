@@ -10,7 +10,6 @@ function Form() {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const loginUser = async (event) => {
-    console.log("event: ", event);
     event.preventDefault();
     const res = await axios.post("/auth/local", {
       identifier: username,

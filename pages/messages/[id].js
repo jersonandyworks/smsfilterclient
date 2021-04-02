@@ -6,13 +6,11 @@ import { useEffect, useState } from "react";
 import NavAdmin from "../../components/nav";
 import Layout from "../../components/layout";
 const Messages = ({ uploads }) => {
-    console.log("messages: ", uploads.messages)
   const [pid, setId] = useState(1);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
-    console.log("POST: ", pid);
     setId(id);
   });
   return (
@@ -22,7 +20,10 @@ const Messages = ({ uploads }) => {
         <div className="card" style={{ paddingTop: "2%" }}>
           <div className="card-header">
             <h3 className="card-title">Clean Records</h3>
-            &nbsp;<Link href="/"><a>&laquo; Back</a></Link>
+            &nbsp;
+            <Link href="/">
+              <a>&laquo; Back</a>
+            </Link>
           </div>
 
           <div className="card-body">
@@ -32,6 +33,7 @@ const Messages = ({ uploads }) => {
                   <th style={{ width: "10px" }}>#</th>
                   <th>File Name</th>
                   <th>Contact Number</th>
+                  <th style={{ width: "100px" }}>Shorten URL</th>
                   <th style={{ width: "40px" }}></th>
                 </tr>
               </thead>
@@ -41,7 +43,10 @@ const Messages = ({ uploads }) => {
                     <td>{i + 1}</td>
                     <td>{message.name}</td>
                     <td>
-                    <a>{message.contact_number}</a>
+                      <a>{message.contact_number}</a>
+                    </td>
+                    <td>
+                      <a href={message.link} target="_blank">https://{Math.random().toString(36).substring(2,8)}.sg</a>
                     </td>
                     <td>
                       <Link href="/">
@@ -78,8 +83,6 @@ export async function getServerSideProps(ctx) {
     error = 1;
     console.log("error ", e);
   }
-
-  console.log("error: ", error);
 
   if (error === 0) {
     return { props: { uploads: res } };

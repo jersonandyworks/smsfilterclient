@@ -26,15 +26,15 @@ export default function NavAdmin() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/reports" >
-                <a className="nav-link">Reports</a>
+              <Link href="/logout" >
+                <a className="nav-link">Logout</a>
               </Link>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link href="#">
                 <a className="nav-link">Contact</a>
               </Link>
-            </li>
+            </li> */}
           </ul>
 
           {/* <form className="form-inline ml-0 ml-md-3">
