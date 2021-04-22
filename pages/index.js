@@ -111,7 +111,7 @@ function Home({ uploads }) {
                         </Link>
                       </td>
                       <td>
-                        <Link href="/">
+                        <Link href="http://localhost:1337/uploads/Book2_5ec323c458.xlsx">
                           <a>
                             <span className="badge bg-warning">
                               Download Report

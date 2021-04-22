@@ -1,12 +1,15 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
+import readXlsxFile from "read-excel-file";
 import styles from "../../components/layout.module.css";
 import axios from "../../config/axios.config";
 import nookies, { parseCookies, setCookie, destroyCookie } from "nookies";
 import { useRouter } from "next/router";
 import NavAdmin from "../../components/nav";
 import Layout from "../../components/layout";
+import Dropdown from "../../components/ui/dropdown";
+import _ from "lodash";
 
 export default function FileUpload() {
   const cookies = parseCookies();
@@ -17,10 +20,38 @@ export default function FileUpload() {
   const [listName, setListName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [percent, setPercent] = useState(0);
-  const changeHandler = (event) => {
+  const [excelRows, setExcelRows] = useState([]);
+  const [excelSampleRows, setSampleExcelRows] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const [showDropDownRow1, setShowDropDownRow1] = useState(false);
+  const [selectRow1Value, setSelectRow1Value] = useState("");
+
+  const [showDropDownRow2, setShowDropDownRow2] = useState(false);
+  const [selectRow2Value, setSelectRow2Value] = useState("");
+
+  const [showDropDownRow3, setShowDropDownRow3] = useState(false);
+  const [selectRow3Value, setSelectRow3Value] = useState("");
+
+  const [showDropDownRow4, setShowDropDownRow4] = useState(false);
+  const [selectRow4Value, setSelectRow4Value] = useState("");
+
+  const [showDropDownRow5, setShowDropDownRow5] = useState(false);
+  const [selectRow5Value, setSelectRow5Value] = useState("");
+
+  const [showDropDownRow6, setShowDropDownRow6] = useState(false);
+  const [selectRow6Value, setSelectRow6Value] = useState("");
+
+  const [showDropDownRow7, setShowDropDownRow7] = useState(false);
+  const [selectRow7Value, setSelectRow7Value] = useState("");
+
+  const changeHandler = async (event) => {
     setSelectedFile(event.target.files[0]);
     setIsFilePicked(true);
-    console.log("selectedFile: ", event.target.files[0]);
+    const xlsRows = await readXlsxFile(event.target.files[0]);
+    setSampleExcelRows(_.slice(xlsRows, 0, 3));
+    setExcelRows(xlsRows);
+    setShowModal(true);
   };
 
   const fileNameHandler = async (e) => {
@@ -39,33 +70,33 @@ export default function FileUpload() {
     const formData = new FormData();
     formData.append("files", selectedFile);
 
-    const uploadedData = await axios.post("/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data",  'Authorization': 'Bearer ' + cookies.userData},
-    });
+    // const uploadedData = await axios.post("/upload", formData, {
+    //   headers: { "Content-Type": "multipart/form-data",  'Authorization': 'Bearer ' + cookies.userData},
+    // });
 
-    console.log("uploadedData: ", uploadedData);
+    // console.log("uploadedData: ", uploadedData);
 
-    await axios
-      .post(
-        "/uploads",
-        {
-          filename: fileName,
-          list_name: listName,
-          spreadsheet: uploadedData.data,
-        },
-        {
-          onUploadProgress: (event) => {
-            const percentage = Math.round((event.loaded / event.total) * 100);
-            console.log("percentage: ", percentage);
-            setPercent(percentage);
-            if (percentage === 100) {
-              setIsUploading(false);
-              router.push("/");
-            }
-          },
-        }
-      )
-      .catch((e) => console.log(e));
+    // await axios
+    //   .post(
+    //     "/uploads",
+    //     {
+    //       filename: fileName,
+    //       list_name: listName,
+    //       spreadsheet: uploadedData.data,
+    //     },
+    //     {
+    //       onUploadProgress: (event) => {
+    //         const percentage = Math.round((event.loaded / event.total) * 100);
+    //         console.log("percentage: ", percentage);
+    //         setPercent(percentage);
+    //         if (percentage === 100) {
+    //           setIsUploading(false);
+    //           router.push("/");
+    //         }
+    //       },
+    //     }
+    //   )
+    //   .catch((e) => console.log(e));
   };
   return (
     <>
@@ -114,29 +145,151 @@ export default function FileUpload() {
                 <label htmlFor="exampleInputFile">XLSX file</label>
                 <div className="input-group">
                   <div className="custom-file">
-                    {/* <input
-                      type="file"
-                      className="custom-file-input"
-                      id="exampleInputFile"
-                      onChange={changeHandler}
-                    /> */}
                     <input type="file" onChange={changeHandler} />
-                  </div>
-                  <div className="input-group-append">
-                    <span className="input-group-text">Upload</span>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="card-footer">
-              <button onClick={handleSubmit} className="btn btn-primary">
-                Upload
-              </button>
-            </div>
           </form>
         </div>
         {/* END UPLOAD FORM */}
+
+        <div
+          className={showModal ? "modal fade show" : ""}
+          id="modal-lg"
+          style={{
+            display: showModal ? "block" : "none",
+            paddingRight: "17px",
+          }}
+          aria-modal="true"
+          role="dialog">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h4 className="modal-title">Upload Contact Records</h4>
+                <button
+                  onClick={() => setShowModal(false)}
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-12">
+                    <div className="card">
+                      <div className="card-header">
+                        <h3 className="card-title">RECIPIENT LIST</h3>
+                      </div>
+
+                      <div className="card-body table-responsive p-0">
+                        <table className="table table-hover text-nowrap">
+                          <thead>
+                            <tr>
+                              {excelSampleRows.length > 0
+                                ? excelSampleRows[0].map((row, i) => {
+                                    const index = i+1;
+                                    let setSelectRowValue = setSelectRow1Value;
+                                    let selectedRowValue = selectRow1Value;
+                                    let setShowDropDownRow = setShowDropDownRow1;
+                                    let showDropDownRow = showDropDownRow1;
+                                    switch (index) {
+                                      case 1:
+                                        setSelectRowValue = setSelectRow1Value;
+                                        selectedRowValue = selectRow1Value;
+                                        setShowDropDownRow = setShowDropDownRow1;
+                                        showDropDownRow = showDropDownRow1;
+                                        break;
+                                      case 2:
+                                        setSelectRowValue = setSelectRow2Value;
+                                        selectedRowValue = selectRow2Value;
+                                        setShowDropDownRow = setShowDropDownRow2;
+                                        showDropDownRow = showDropDownRow2;
+                                        break;
+                                      case 3:
+                                        setSelectRowValue = setSelectRow3Value;
+                                        selectedRowValue = selectRow3Value;
+                                        setShowDropDownRow = setShowDropDownRow3;
+                                        showDropDownRow = showDropDownRow3;
+                                        break;
+                                      case 4:
+                                        setSelectRowValue = setSelectRow4Value;
+                                        selectedRowValue = selectRow4Value;
+                                        setShowDropDownRow = setShowDropDownRow4;
+                                        showDropDownRow = showDropDownRow4;
+                                        break;
+                                      case 5:
+                                        setSelectRowValue = setSelectRow5Value;
+                                        selectedRowValue = selectRow5Value;
+                                        setShowDropDownRow = setShowDropDownRow5;
+                                        showDropDownRow = showDropDownRow5;
+                                        break;
+                                      case 6:
+                                        setSelectRowValue = setSelectRow6Value;
+                                        selectedRowValue = selectRow6Value;
+                                        setShowDropDownRow = setShowDropDownRow6;
+                                        showDropDownRow = showDropDownRow6;
+                                        break;
+                                      case 7:
+                                        setSelectRowValue = setSelectRow7Value;
+                                        selectedRowValue = selectRow7Value;
+                                        setShowDropDownRow = setShowDropDownRow7;
+                                        showDropDownRow = showDropDownRow7;
+                                        break;
+                                    }
+                                    return (
+                                      <th>
+                                        <Dropdown
+                                          row={i + 1}
+                                          setSelectRowValue={setSelectRowValue}
+                                          selectedRowValue={selectedRowValue}
+                                          setShowDropDownRow={
+                                            setShowDropDownRow
+                                          }
+                                          showDropDownRow={showDropDownRow}
+                                        />
+                                      </th>
+                                    );
+                                  })
+                                : null}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {excelSampleRows.map((row, i) => (
+                              <tr>
+                                <td>{row[0]}</td>
+                                <td>{row[1]}</td>
+                                <td>{row[2]}</td>
+                                <td>{row[3]}</td>
+                                <td>{row[4]}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer justify-content-between">
+                <button
+                  onClick={() => setShowModal(false)}
+                  type="button"
+                  className="btn btn-default"
+                  data-dismiss="modal">
+                  Close
+                </button>
+                <button type="button" className="btn btn-primary">
+                  Save changes and Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={showModal ? "modal-backdrop fade show" : null}></div>
         {/* <div className={styles.container}>
           <h1>
             {" "}
