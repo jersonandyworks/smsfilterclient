@@ -1,7 +1,10 @@
+import _ from "lodash";
+
 export default function Dropdown(props) {
+  console.log("field to remove: ", props.fieldToRemove)
   return (
-    <div class="btn-group show">
-      <button type="button" class="btn btn-default">
+    <div className="btn-group show">
+      <button type="button" className="btn btn-default">
         {props.selectedRowValue !== ""
           ? props.selectedRowValue
           : "Row " + props.row}
@@ -9,13 +12,13 @@ export default function Dropdown(props) {
       <button
         onClick={() => props.setShowDropDownRow(!props.showDropDownRow)}
         type="button"
-        class="btn btn-default dropdown-toggle dropdown-icon"
+        className="btn btn-default dropdown-toggle dropdown-icon"
         data-toggle="dropdown"
         aria-expanded="false">
-        <span class="sr-only">Toggle Dropdown</span>
+        <span className="sr-only">Toggle Dropdown</span>
       </button>
       <div
-        class={props.showDropDownRow ? "dropdown-menu show" : "dropdown-menu"}
+        className={props.showDropDownRow ? "dropdown-menu show" : "dropdown-menu"}
         role="menu"
         style={{
           position: "absolute",
@@ -24,45 +27,49 @@ export default function Dropdown(props) {
           left: "0px",
           willChange: "transform",
         }}>
-        {props.fieldToRemove !== "firstname" ? (
+        {!_.includes(props.fieldToRemove,"firstname") ? (
           <a
-            class="dropdown-item"
+            className="dropdown-item"
             onClick={() => {
               props.setSelectRowValue("firstname");
+              props.handlePushFieldToRemove("firstname");
               props.setShowDropDownRow(!props.showDropDownRow);
             }}>
             First Name
           </a>
         ) : null}
-        {props.fieldToRemove !== "intials" ? (
+        {!_.includes(props.fieldToRemove,"initials") ? (
           <a
-            class="dropdown-item"
+            className="dropdown-item"
             onClick={() => {
               props.setSelectRowValue("initials");
+              props.handlePushFieldToRemove("initials");
               props.setShowDropDownRow(!props.showDropDownRow);
             }}>
             Initials
           </a>
         ) : null}
 
-        <div class="dropdown-divider"></div>
-        {props.fieldToRemove !== "contact" ? (
+        <div className="dropdown-divider"></div>
+        {!_.includes(props.fieldToRemove,"contact") ? (
           <a
-            class="dropdown-item"
+            className="dropdown-item"
             onClick={() => {
               props.setSelectRowValue("contact");
+              props.handlePushFieldToRemove("contact");
               props.setShowDropDownRow(!props.showDropDownRow);
             }}>
             Contact
           </a>
         ) : null}
 
-        <div class="dropdown-divider"></div>
-        {props.fieldToRemove !== "link" ? (
+        <div className="dropdown-divider"></div>
+        {!_.includes(props.fieldToRemove,"link") ? (
           <a
-            class="dropdown-item"
+            className="dropdown-item"
             onClick={() => {
               props.setSelectRowValue("link");
+              props.handlePushFieldToRemove("link");
               props.setShowDropDownRow(!props.showDropDownRow);
             }}>
             Link

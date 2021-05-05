@@ -45,7 +45,10 @@ export default function FileUpload() {
   const [showDropDownRow7, setShowDropDownRow7] = useState(false);
   const [selectRow7Value, setSelectRow7Value] = useState("");
 
+  const [fieldToRemove, setFieldToRemove] = useState([]);
+
   const changeHandler = async (event) => {
+    console.log("selected files: ", event.target.files);
     setSelectedFile(event.target.files[0]);
     setIsFilePicked(true);
     const xlsRows = await readXlsxFile(event.target.files[0]);
@@ -62,7 +65,15 @@ export default function FileUpload() {
     setListName(e.target.value);
   };
 
+  const handlePushFieldToRemove = (field) => {
+    const fieldsToRemove = [...fieldToRemove];
+    console.log(fieldsToRemove);
+    fieldsToRemove.push(field);
+    setFieldToRemove(fieldsToRemove);
+  };
+
   const handleSubmit = async (e) => {
+
     const cookies = parseCookies();
     e.preventDefault();
     setIsUploading(true);
@@ -75,28 +86,33 @@ export default function FileUpload() {
     // });
 
     // console.log("uploadedData: ", uploadedData);
+    excelRows.unshift({row1: selectRow1Value})
+    console.log(excelRows);
+    console.log(JSON.stringify({...excelRows}))
+    await axios
+      .post(
+        "/uploads",
+        {
+          filename: fileName,
+          list_name: listName,
+          excelrows: Object.assign({}, excelRows)
+        },
+        { headers: { 'Authorization': 'Bearer ' + cookies.userData},}
+      )
+      .catch((e) => console.log(e));
 
-    // await axios
-    //   .post(
-    //     "/uploads",
-    //     {
-    //       filename: fileName,
-    //       list_name: listName,
-    //       spreadsheet: uploadedData.data,
-    //     },
-    //     {
-    //       onUploadProgress: (event) => {
-    //         const percentage = Math.round((event.loaded / event.total) * 100);
-    //         console.log("percentage: ", percentage);
-    //         setPercent(percentage);
-    //         if (percentage === 100) {
-    //           setIsUploading(false);
-    //           router.push("/");
-    //         }
-    //       },
-    //     }
-    //   )
-    //   .catch((e) => console.log(e));
+      // ,
+      //   {
+      //     onUploadProgress: (event) => {
+      //       const percentage = Math.round((event.loaded / event.total) * 100);
+      //       console.log("percentage: ", percentage);
+      //       setPercent(percentage);
+      //       if (percentage === 100) {
+      //         setIsUploading(false);
+      //         // router.push("/");
+      //       }
+      //     },
+      //   }
   };
   return (
     <>
@@ -182,6 +198,23 @@ export default function FileUpload() {
                     <div className="card">
                       <div className="card-header">
                         <h3 className="card-title">RECIPIENT LIST</h3>
+                        <br />
+                        {fieldToRemove.length > 0 ? (
+                          <button
+                            className="btn btn-warning"
+                            onClick={() => {
+                              setFieldToRemove([]);
+                              setSelectRow1Value("");
+                              setSelectRow2Value("");
+                              setSelectRow3Value("");
+                              setSelectRow4Value("");
+                              setSelectRow5Value("");
+                              setSelectRow6Value("");
+                              setSelectRow7Value("");
+                            }}>
+                            Clear Row Selected
+                          </button>
+                        ) : null}
                       </div>
 
                       <div className="card-body table-responsive p-0">
@@ -190,7 +223,7 @@ export default function FileUpload() {
                             <tr>
                               {excelSampleRows.length > 0
                                 ? excelSampleRows[0].map((row, i) => {
-                                    const index = i+1;
+                                    const index = i + 1;
                                     let setSelectRowValue = setSelectRow1Value;
                                     let selectedRowValue = selectRow1Value;
                                     let setShowDropDownRow = setShowDropDownRow1;
@@ -243,12 +276,17 @@ export default function FileUpload() {
                                       <th>
                                         <Dropdown
                                           row={i + 1}
+                                          setFieldToRemove={setFieldToRemove}
                                           setSelectRowValue={setSelectRowValue}
                                           selectedRowValue={selectedRowValue}
                                           setShowDropDownRow={
                                             setShowDropDownRow
                                           }
                                           showDropDownRow={showDropDownRow}
+                                          fieldToRemove={fieldToRemove}
+                                          handlePushFieldToRemove={
+                                            handlePushFieldToRemove
+                                          }
                                         />
                                       </th>
                                     );
@@ -281,7 +319,10 @@ export default function FileUpload() {
                   data-dismiss="modal">
                   Close
                 </button>
-                <button type="button" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(e) => handleSubmit(e)}>
                   Save changes and Upload
                 </button>
               </div>
