@@ -1,13 +1,12 @@
 import _ from "lodash";
 
 export default function Dropdown(props) {
-  console.log("field to remove: ", props.fieldToRemove)
   return (
     <div className="btn-group show">
       <button type="button" className="btn btn-default">
         {props.selectedRowValue !== ""
           ? props.selectedRowValue
-          : "Row " + props.row}
+          : "Column " + props.row}
       </button>
       <button
         onClick={() => props.setShowDropDownRow(!props.showDropDownRow)}
@@ -18,7 +17,9 @@ export default function Dropdown(props) {
         <span className="sr-only">Toggle Dropdown</span>
       </button>
       <div
-        className={props.showDropDownRow ? "dropdown-menu show" : "dropdown-menu"}
+        className={
+          props.showDropDownRow ? "dropdown-menu show" : "dropdown-menu"
+        }
         role="menu"
         style={{
           position: "absolute",
@@ -27,53 +28,92 @@ export default function Dropdown(props) {
           left: "0px",
           willChange: "transform",
         }}>
-        {!_.includes(props.fieldToRemove,"firstname") ? (
+        {!_.includes(props.fieldToRemove, "firstname") ? (
           <a
             className="dropdown-item"
             onClick={() => {
               props.setSelectRowValue("firstname");
               props.handlePushFieldToRemove("firstname");
               props.setShowDropDownRow(!props.showDropDownRow);
+              props.setCustomFieldValue(props.index,"firstname");
             }}>
             First Name
           </a>
         ) : null}
-        {!_.includes(props.fieldToRemove,"initials") ? (
+        {!_.includes(props.fieldToRemove, "lastname") ? (
           <a
             className="dropdown-item"
             onClick={() => {
-              props.setSelectRowValue("initials");
-              props.handlePushFieldToRemove("initials");
+              props.setSelectRowValue("lastname");
+              props.handlePushFieldToRemove("lastname");
               props.setShowDropDownRow(!props.showDropDownRow);
+              props.setCustomFieldValue(props.index,"lastname");
             }}>
-            Initials
+            Last Name
           </a>
         ) : null}
-
-        <div className="dropdown-divider"></div>
-        {!_.includes(props.fieldToRemove,"contact") ? (
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              props.setSelectRowValue("contact");
-              props.handlePushFieldToRemove("contact");
-              props.setShowDropDownRow(!props.showDropDownRow);
-            }}>
-            Contact
-          </a>
+        {!_.includes(props.fieldToRemove, "initials") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("initials");
+                props.handlePushFieldToRemove("initials");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index,"initials");
+              }}>
+              Initials
+            </a>
+          </>
         ) : null}
 
-        <div className="dropdown-divider"></div>
-        {!_.includes(props.fieldToRemove,"link") ? (
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              props.setSelectRowValue("link");
-              props.handlePushFieldToRemove("link");
-              props.setShowDropDownRow(!props.showDropDownRow);
-            }}>
-            Link
-          </a>
+        {!_.includes(props.fieldToRemove, "contact") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("contact");
+                props.handlePushFieldToRemove("contact");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index,"contact");
+
+              }}>
+              Contact
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "link") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("link");
+                props.handlePushFieldToRemove("link");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index,"link");
+
+              }}>
+              Link
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "custom") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("custom");
+                props.setShowDropDownRow(!props.showDropDownRow);
+              }}>
+              Custom
+            </a>
+          </>
         ) : null}
       </div>
     </div>

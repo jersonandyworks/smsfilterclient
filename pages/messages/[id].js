@@ -31,9 +31,28 @@ const Messages = ({ uploads }) => {
               <thead>
                 <tr>
                   <th style={{ width: "10px" }}>#</th>
-                  <th>File Name</th>
-                  <th>Contact Number</th>
-                  <th style={{ width: "100px" }}>Shorten URL</th>
+                  <th>{uploads.column.column_one}</th>
+                  <th>{uploads.column.column_two}</th>
+                  <th style={{ width: "100px" }}>
+                    {uploads.column.column_three}
+                  </th>
+                  { uploads.column.column_four !== null ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.column_four}
+                    </th>
+                  ) : null}
+                  { uploads.column.column_five !== "" ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.column_five}
+                    </th>
+                  ) : null}
+
+                  {uploads.column.column_six !== "" || uploads.column.column_six !== null  ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.column_six}
+                    </th>
+                  ) : null}
+
                   <th style={{ width: "40px" }}></th>
                 </tr>
               </thead>
@@ -41,13 +60,23 @@ const Messages = ({ uploads }) => {
                 {uploads.messages.map((message, i) => (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{message.name}</td>
+                    <td>{message.column_one}</td>
                     <td>
-                      <a>{message.contact_number}</a>
+                      <a>{message.column_two}</a>
                     </td>
-                    <td>
-                      <a href={message.link} target="_blank">https://{Math.random().toString(36).substring(2,8)}.sg</a>
-                    </td>
+                    <td>{message.column_three}</td>
+                    {message.column_four !== "" ? (
+                      <td>{message.column_four}</td>
+                    ) : null}
+
+                    {message.column_five !== "" ? (
+                      <td>{message.column_five}</td>
+                    ) : null}
+
+                    {message.column_six !== "" || message.column_six !== null? (
+                      <td>{message.column_six}</td>
+                    ) : null}
+
                     <td>
                       <Link href="/">
                         <a>
@@ -79,6 +108,8 @@ export async function getServerSideProps(ctx) {
     });
 
     res = messages.data;
+
+    const column = await axios.get();
   } catch (e) {
     error = 1;
     console.log("error ", e);

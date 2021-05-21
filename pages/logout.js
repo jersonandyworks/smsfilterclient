@@ -1,6 +1,7 @@
+import { parseCookies, setCookie, destroyCookie } from 'nookies'
 function Logout(){
-
-    // document.cookie = "userData=;";
+    const cookies = parseCookies();
+    destroyCookie(null,'userData')
     return (<h1>LOGGED OUT!</h1>)
 }
 

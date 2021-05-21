@@ -15,9 +15,13 @@ function Form() {
       identifier: username,
       password: password,
     });
+
+    console.log("res fuck: ",res);
     const userData = res.data;
     const jwt = userData.jwt;
+
     setCookie(null, "userData", jwt);
+    console.log("cookies: ", parseCookies)
     router.push("/");
   };
 

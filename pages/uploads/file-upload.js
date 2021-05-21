@@ -21,6 +21,7 @@ export default function FileUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [percent, setPercent] = useState(0);
   const [excelRows, setExcelRows] = useState([]);
+  const [excelColumns, setExcelColumns] = useState({});
   const [excelSampleRows, setSampleExcelRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -44,8 +45,24 @@ export default function FileUpload() {
 
   const [showDropDownRow7, setShowDropDownRow7] = useState(false);
   const [selectRow7Value, setSelectRow7Value] = useState("");
+  const [showCustomField, setShowCustomField] = useState(false);
 
   const [fieldToRemove, setFieldToRemove] = useState([]);
+  const [customFieldValue, setCustomFieldValue] = useState("");
+  const [customColumns, setCustomColumns] = useState([
+    { column: 1, value: "" },
+    { column: 2, value: "" },
+    { column: 3, value: "" },
+    { column: 4, value: "" },
+    { column: 5, value: "" },
+    { column: 6, value: "" },
+    { column: 7, value: "" },
+    { column: 8, value: "" },
+    { column: 9, value: "" },
+    { column: 10, value: "" },
+    { column: 11, value: "" },
+    { column: 12, value: "" },
+  ]);
 
   const changeHandler = async (event) => {
     console.log("selected files: ", event.target.files);
@@ -73,47 +90,88 @@ export default function FileUpload() {
   };
 
   const handleSubmit = async (e) => {
-
     const cookies = parseCookies();
     e.preventDefault();
     setIsUploading(true);
     console.log("!@#!@#!#: fileName", fileName);
     const formData = new FormData();
     formData.append("files", selectedFile);
-
+    console.log("formData: ", formData);
     // const uploadedData = await axios.post("/upload", formData, {
     //   headers: { "Content-Type": "multipart/form-data",  'Authorization': 'Bearer ' + cookies.userData},
     // });
 
     // console.log("uploadedData: ", uploadedData);
-    excelRows.unshift({row1: selectRow1Value})
-    console.log(excelRows);
-    console.log(JSON.stringify({...excelRows}))
+    const columns = customColumns;
+
+    console.log("excelColumns: ", columns);
+    // console.log(excelRows);
+    console.log(JSON.stringify({ ...excelRows }));
     await axios
       .post(
         "/uploads",
         {
           filename: fileName,
           list_name: listName,
-          excelrows: Object.assign({}, excelRows)
+          excelrows: excelRows,
+          excelcolumns: columns,
         },
-        { headers: { 'Authorization': 'Bearer ' + cookies.userData},}
+        { headers: { Authorization: "Bearer " + cookies.userData } }
       )
       .catch((e) => console.log(e));
+    // setSelectedFile(null);
+    // setExcelColumns({});
+    // setFieldToRemove([]);
+    // setSelectRow1Value("");
+    // setSelectRow2Value("");
+    // setSelectRow3Value("");
+    // setSelectRow4Value("");
+    // setSelectRow5Value("");
+    // setSelectRow6Value("");
+    // setSelectRow7Value("");
+    // setCustomColumns([
+    //   { column: 1, value: "" },
+    //   { column: 2, value: "" },
+    //   { column: 3, value: "" },
+    //   { column: 4, value: "" },
+    //   { column: 5, value: "" },
+    //   { column: 6, value: "" },
+    //   { column: 7, value: "" },
+    //   { column: 8, value: "" },
+    //   { column: 9, value: "" },
+    //   { column: 10, value: "" },
+    //   { column: 11, value: "" },
+    //   { column: 12, value: "" },
+    // ]);
+    // setShowModal(false);
 
-      // ,
-      //   {
-      //     onUploadProgress: (event) => {
-      //       const percentage = Math.round((event.loaded / event.total) * 100);
-      //       console.log("percentage: ", percentage);
-      //       setPercent(percentage);
-      //       if (percentage === 100) {
-      //         setIsUploading(false);
-      //         // router.push("/");
-      //       }
-      //     },
-      //   }
+    // ,
+    //   {
+    //     onUploadProgress: (event) => {
+    //       const percentage = Math.round((event.loaded / event.total) * 100);
+    //       console.log("percentage: ", percentage);
+    //       setPercent(percentage);
+    //       if (percentage === 100) {
+    //         setIsUploading(false);
+    //         // router.push("/");
+    //       }
+    //     },
+    //   }
   };
+
+  const handCustomField = async (index, value) => {
+    const customFieldValue = [...customColumns];
+    customFieldValue[index].value = _.trim(value).toLowerCase();
+    setCustomColumns(customFieldValue);
+    console.log("customFieldValue: ", customFieldValue);
+  };
+
+  const handCustomFieldText = async (index, value) => {
+    const customFieldValue = [...customColumns];
+    customFieldValue[index].value = _.trim(value).toLowerCase();
+    setCustomColumns(customFieldValue);
+  };
+
   return (
     <>
       <Head>
@@ -161,7 +219,7 @@ export default function FileUpload() {
                 <label htmlFor="exampleInputFile">XLSX file</label>
                 <div className="input-group">
                   <div className="custom-file">
-                    <input type="file" onChange={changeHandler} />
+                    <input type="file" onChange={changeHandler} disabled={fileName === "" || listName === "" ? true : false} />
                   </div>
                 </div>
               </div>
@@ -224,16 +282,19 @@ export default function FileUpload() {
                               {excelSampleRows.length > 0
                                 ? excelSampleRows[0].map((row, i) => {
                                     const index = i + 1;
+                                    let excelColumns = { ...excelColumns };
                                     let setSelectRowValue = setSelectRow1Value;
                                     let selectedRowValue = selectRow1Value;
                                     let setShowDropDownRow = setShowDropDownRow1;
                                     let showDropDownRow = showDropDownRow1;
+
                                     switch (index) {
                                       case 1:
                                         setSelectRowValue = setSelectRow1Value;
                                         selectedRowValue = selectRow1Value;
                                         setShowDropDownRow = setShowDropDownRow1;
                                         showDropDownRow = showDropDownRow1;
+
                                         break;
                                       case 2:
                                         setSelectRowValue = setSelectRow2Value;
@@ -272,22 +333,61 @@ export default function FileUpload() {
                                         showDropDownRow = showDropDownRow7;
                                         break;
                                     }
+
                                     return (
                                       <th>
-                                        <Dropdown
-                                          row={i + 1}
-                                          setFieldToRemove={setFieldToRemove}
-                                          setSelectRowValue={setSelectRowValue}
-                                          selectedRowValue={selectedRowValue}
-                                          setShowDropDownRow={
-                                            setShowDropDownRow
-                                          }
-                                          showDropDownRow={showDropDownRow}
-                                          fieldToRemove={fieldToRemove}
-                                          handlePushFieldToRemove={
-                                            handlePushFieldToRemove
-                                          }
-                                        />
+                                        {selectedRowValue !== "custom" ? (
+                                          <Dropdown
+                                            key={i + 1}
+                                            row={i + 1}
+                                            index={i}
+                                            setFieldToRemove={setFieldToRemove}
+                                            setSelectRowValue={
+                                              setSelectRowValue
+                                            }
+                                            selectedRowValue={selectedRowValue}
+                                            setShowDropDownRow={
+                                              setShowDropDownRow
+                                            }
+                                            setShowCustomField={
+                                              setShowCustomField
+                                            }
+                                            setCustomFieldValue={
+                                              handCustomFieldText
+                                            }
+                                            showDropDownRow={showDropDownRow}
+                                            fieldToRemove={fieldToRemove}
+                                            handlePushFieldToRemove={
+                                              handlePushFieldToRemove
+                                            }
+                                          />
+                                        ) : (
+                                          <>
+                                            <input
+                                              key={i + 1}
+                                              type="text"
+                                              value=""
+                                              className="form-group"
+                                              onChange={(e) =>
+                                                handCustomField(
+                                                  i,
+                                                  e.target.value
+                                                )
+                                              }
+                                              value={customColumns[i].value}
+                                            />{" "}
+                                            <a
+                                              style={{
+                                                color: "red",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                setSelectRowValue("")
+                                              }>
+                                              X
+                                            </a>
+                                          </>
+                                        )}
                                       </th>
                                     );
                                   })

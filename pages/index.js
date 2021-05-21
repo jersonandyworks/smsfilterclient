@@ -107,7 +107,7 @@ function Home({ uploads }) {
                       </td>
                       <td>
                         <Link href={`/messages/${file.id}`}>
-                          <a>{file.messages.length}</a>
+                          <a>{Array.isArray(file.messages) ? file.messages.length : 0}</a>
                         </Link>
                       </td>
                       <td>
@@ -159,6 +159,10 @@ export async function getServerSideProps(ctx) {
   const cookies = nookies.get(ctx);
   let res = [];
   let error = 0;
+  console.log("cookies: ", cookies );
+
+
+
   try {
     const uploads = await axios.get("/uploads", {
       headers: { Authorization: "Bearer " + cookies.userData },
@@ -167,12 +171,13 @@ export async function getServerSideProps(ctx) {
     res = uploads.data;
   } catch (e) {
     error = 1;
-    console.log("error ", e);
+    console.log("error ", e.data);
   }
 
   if (error === 0) {
     return { props: { uploads: res } };
   } else {
+    console.log ("res: ", res.data)
     return {
       redirect: {
         destination: "/login",
@@ -180,5 +185,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   }
+
+  return {props: {uploads: ""}}
 }
 export default Home;
