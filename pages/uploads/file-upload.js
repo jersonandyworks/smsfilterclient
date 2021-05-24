@@ -111,8 +111,8 @@ export default function FileUpload() {
       .post(
         "/uploads",
         {
-          filename: fileName,
-          list_name: listName,
+          filename: _.snakeCase(fileName),
+          list_name: _.snakeCase(listName),
           excelrows: excelRows,
           excelcolumns: columns,
         },

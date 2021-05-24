@@ -2,7 +2,7 @@ import Link from "next/link";
 export default function NavAdmin() {
   return (
     <nav className="main-header navbar navbar-expand-md navbar-light navbar-white">
-      <div className="container">
+      <div className="container-fluid">
         <Link href="/" >
           <a className="navbar-brand"><span className="brand-text font-weight-light">SMS Filtering</span></a>
         </Link>

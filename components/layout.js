@@ -24,7 +24,7 @@ export default function Layout({ children }) {
         <div className="wrapper">
           <div className="content-wrapper">
             <div className="content">
-              <div className="container" style={{paddingTop:"20px   "}}>{children}</div>
+              <div className="container-fluid" style={{paddingTop:"20px   "}}>{children}</div>
             </div>
           </div>
         </div>
