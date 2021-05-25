@@ -31,50 +31,92 @@ const Messages = ({ uploads }) => {
               <thead>
                 <tr>
                   <th style={{ width: "10px" }}>#</th>
-                  <th>{uploads.column.column_one}</th>
-                  <th>{uploads.column.column_two}</th>
+                  <th>{uploads.column.custom_column_one}</th>
+                  <th>{uploads.column.custom_column_two}</th>
                   <th style={{ width: "100px" }}>
-                    {uploads.column.column_three}
+                    {uploads.column.custom_column_three}
                   </th>
-                  { uploads.column.column_four !== null ? (
+                  {uploads.column.custom_column_four !== null ? (
                     <th style={{ width: "100px" }}>
-                      {uploads.column.column_four}
+                      {uploads.column.custom_column_four}
                     </th>
                   ) : null}
-                  { uploads.column.column_five !== "" ? (
+                  {uploads.column.custom_column_five !== "" ? (
                     <th style={{ width: "100px" }}>
-                      {uploads.column.column_five}
-                    </th>
-                  ) : null}
-
-                  {uploads.column.column_six !== "" || uploads.column.column_six !== null  ? (
-                    <th style={{ width: "100px" }}>
-                      {uploads.column.column_six}
+                      {uploads.column.custom_column_five}
                     </th>
                   ) : null}
 
-                  <th style={{ width: "40px" }}></th>
+                  {uploads.column.custom_column_six !== "" ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.custom_column_six}
+                    </th>
+                  ) : null}
+
+                  {uploads.column.custom_column_seven !== "" ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.custom_column_seven}
+                    </th>
+                  ) : null}
+
+                  {uploads.column.custom_column_eight !== "" ? (
+                    <th style={{ width: "100px" }}>
+                      {uploads.column.custom_column_eight}
+                    </th>
+                  ) : null}
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {uploads.messages.map((message, i) => (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{message.column_one}</td>
                     <td>
-                      <a>{message.column_two}</a>
+                      {message.hasOwnProperty("firstname")
+                        ? message.firstname !== ""
+                          ? message.firstname
+                          : message.custom_value_one
+                        : message.custom_value_one}
                     </td>
-                    <td>{message.column_three}</td>
-                    {message.column_four !== "" ? (
-                      <td>{message.column_four}</td>
-                    ) : null}
-
-                    {message.column_five !== "" ? (
-                      <td>{message.column_five}</td>
-                    ) : null}
-
-                    {message.column_six !== "" || message.column_six !== null? (
-                      <td>{message.column_six}</td>
+                    {message.hasOwnProperty("lastname") ? (
+                      <td>
+                        <a>
+                          {message.hasOwnProperty("lastname")
+                            ? message.lastname !== ""
+                              ? message.lastname
+                              : message.custom_value_two
+                            : message.custom_value_two}
+                        </a>
+                      </td>
+                    ) : (
+                      <td>
+                      <a>
+                        {message.hasOwnProperty("initials")
+                          ? message.initials !== ""
+                            ? message.initials
+                            : message.custom_value_two
+                          : message.custom_value_two}
+                      </a>
+                    </td>
+                    )}
+                    <td>
+                      {message.hasOwnProperty("contact")
+                        ? message.contact !== ""
+                          ? message.contact
+                          : message.custom_value_three
+                        : message.custom_value_three}
+                    </td>
+                    <td>
+                      {message.hasOwnProperty("url")
+                        ? message.url
+                        : message.custom_value_four}
+                    </td>
+                    {message.hasOwnProperty("address") ? (
+                      <td>
+                        {message.hasOwnProperty("address")
+                          ? message.address
+                          : message.custom_value_five}
+                      </td>
                     ) : null}
 
                     <td>
