@@ -9,7 +9,9 @@ import { useRouter } from "next/router";
 import NavAdmin from "../../components/nav";
 import Layout from "../../components/layout";
 import Dropdown from "../../components/ui/dropdown";
+import Spinner from "../../components/ui/spinner";
 import _ from "lodash";
+import { route } from "next/dist/next-server/server/router";
 
 export default function FileUpload() {
   const cookies = parseCookies();
@@ -46,7 +48,9 @@ export default function FileUpload() {
   const [showDropDownRow7, setShowDropDownRow7] = useState(false);
   const [selectRow7Value, setSelectRow7Value] = useState("");
   const [showCustomField, setShowCustomField] = useState(false);
-
+  const [showWarning, setShowWarning] = useState(false);
+  const [warningMessage, setWarningMessage] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const [fieldToRemove, setFieldToRemove] = useState([]);
   const [customFieldValue, setCustomFieldValue] = useState("");
   const [customColumns, setCustomColumns] = useState([
@@ -65,13 +69,24 @@ export default function FileUpload() {
   ]);
 
   const changeHandler = async (event) => {
-    console.log("selected files: ", event.target.files);
-    setSelectedFile(event.target.files[0]);
-    setIsFilePicked(true);
-    const xlsRows = await readXlsxFile(event.target.files[0]);
-    setSampleExcelRows(_.slice(xlsRows, 0, 3));
-    setExcelRows(xlsRows);
-    setShowModal(true);
+
+
+    const xlsxCheck = `(xlsx)`;
+    const reCheckXlsx = new RegExp(xlsxCheck);
+    const isAnXlsx = reCheckXlsx.test(event.target.files[0].name);
+
+    if (isAnXlsx) {
+      setSelectedFile(event.target.files[0]);
+      setIsFilePicked(true);
+      const xlsRows = await readXlsxFile(event.target.files[0]);
+      setSampleExcelRows(_.slice(xlsRows, 0, 3));
+      setExcelRows(xlsRows);
+      setShowModal(true);
+      setShowWarning(false);
+    } else {
+      setShowWarning(true);
+      setWarningMessage("Please make sure you upload only .xlsx format.");
+    }
   };
 
   const fileNameHandler = async (e) => {
@@ -83,9 +98,11 @@ export default function FileUpload() {
   };
 
   const handlePushFieldToRemove = (field) => {
-    const fieldsToRemove = [...fieldToRemove];
+    const fieldsToRemove = [];
     console.log(fieldsToRemove);
+    fieldToRemove.shift();
     fieldsToRemove.push(field);
+    console.log(fieldToRemove);
     setFieldToRemove(fieldsToRemove);
   };
 
@@ -93,30 +110,58 @@ export default function FileUpload() {
     const cookies = parseCookies();
     e.preventDefault();
     setIsUploading(true);
-    console.log("!@#!@#!#: fileName", fileName);
+    setShowLoading(true);
     const formData = new FormData();
     formData.append("files", selectedFile);
-    console.log("formData: ", formData);
+
     // const uploadedData = await axios.post("/upload", formData, {
     //   headers: { "Content-Type": "multipart/form-data",  'Authorization': 'Bearer ' + cookies.userData},
     // });
 
-    // console.log("uploadedData: ", uploadedData);
-    const columns = customColumns;
-    console.log(JSON.stringify({ ...excelRows }));
 
-    await axios
-      .post(
-        "/uploads",
-        {
-          filename: _.snakeCase(fileName),
-          list_name: _.snakeCase(listName),
-          excelrows: excelRows,
-          excelcolumns: columns,
-        },
-        { headers: { Authorization: "Bearer " + cookies.userData } }
-      )
-      .catch((e) => console.log(e));
+    const columns = customColumns;
+
+    if (!_.find(columns, (c) => c.value == "firstname")) {
+      setShowWarning(true);
+      setWarningMessage(
+        "Please make sure all firstname and lastname are present"
+      );
+    } else if (
+      columns[1].value === "" ||
+      columns[2].value === "" ||
+      columns[3].value === ""
+    ) {
+      setShowWarning(true);
+      setWarningMessage("Please make sure all columns are filled");
+    } else {
+
+      setShowWarning(false);
+
+      await axios
+        .post(
+          "/uploads",
+          {
+            filename: _.snakeCase(fileName),
+            list_name: _.snakeCase(listName),
+            excelrows: excelRows,
+            excelcolumns: columns,
+          },
+          { headers: { Authorization: "Bearer " + cookies.userData } },
+          {
+            onUploadProgress: (event) => {
+              const percentage = Math.round((event.loaded / event.total) * 100);
+              console.log("percentage: ", percentage);
+              setPercent(percentage);
+              if (percentage === 100) {
+                setIsUploading(false);
+              }
+            },
+          }
+        )
+        .catch((e) => console.log(e));
+        router.push("/")
+    }
+
     setSelectedFile(null);
     setExcelColumns({});
     setFieldToRemove([]);
@@ -142,26 +187,16 @@ export default function FileUpload() {
       { column: 12, value: "" },
     ]);
     setShowModal(false);
+    setShowLoading(false);
 
     // ,
-    //   {
-    //     onUploadProgress: (event) => {
-    //       const percentage = Math.round((event.loaded / event.total) * 100);
-    //       console.log("percentage: ", percentage);
-    //       setPercent(percentage);
-    //       if (percentage === 100) {
-    //         setIsUploading(false);
-    //         // router.push("/");
-    //       }
-    //     },
-    //   }
   };
 
   const handCustomField = async (index, value) => {
     const customFieldValue = [...customColumns];
     customFieldValue[index].value = _.trim(value).toLowerCase();
     setCustomColumns(customFieldValue);
-    console.log("customFieldValue: ", customFieldValue);
+
   };
 
   const handCustomFieldText = async (index, value) => {
@@ -185,13 +220,12 @@ export default function FileUpload() {
 
           <form>
             <div className="card-body">
-              {isUploading ? (
-                <div className="progress">
-                  <div
-                    className="progress-bar"
-                    style={{ width: `${percent}%` }}></div>
+              {showWarning ? (
+                <div class="alert alert-warning" role="alert">
+                  {warningMessage}
                 </div>
               ) : null}
+
 
               <div className="form-group">
                 <label htmlFor="exampleInputEmail1">File Name</label>
@@ -217,7 +251,13 @@ export default function FileUpload() {
                 <label htmlFor="exampleInputFile">XLSX file</label>
                 <div className="input-group">
                   <div className="custom-file">
-                    <input type="file" onChange={changeHandler} disabled={fileName === "" || listName === "" ? true : false} />
+                    <input
+                      type="file"
+                      onChange={changeHandler}
+                      disabled={
+                        fileName === "" || listName === "" ? true : false
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -251,179 +291,201 @@ export default function FileUpload() {
               <div className="modal-body">
                 <div className="row">
                   <div className="col-12">
-                    <div className="card">
-                      <div className="card-header">
-                        <h3 className="card-title">RECIPIENT LIST</h3>
-                        <br />
-                        {fieldToRemove.length > 0 ? (
-                          <button
-                            className="btn btn-warning"
-                            onClick={() => {
-                              setFieldToRemove([]);
-                              setSelectRow1Value("");
-                              setSelectRow2Value("");
-                              setSelectRow3Value("");
-                              setSelectRow4Value("");
-                              setSelectRow5Value("");
-                              setSelectRow6Value("");
-                              setSelectRow7Value("");
-                            }}>
-                            Clear Row Selected
-                          </button>
-                        ) : null}
+                    {showWarning ? (
+                      <div class="alert alert-warning" role="alert">
+                        {warningMessage}
                       </div>
+                    ) : null}
 
-                      <div className="card-body table-responsive p-0">
-                        <table className="table table-hover text-nowrap">
-                          <thead>
-                            <tr>
-                              {excelSampleRows.length > 0
-                                ? excelSampleRows[0].map((row, i) => {
-                                    const index = i + 1;
-                                    let excelColumns = { ...excelColumns };
-                                    let setSelectRowValue = setSelectRow1Value;
-                                    let selectedRowValue = selectRow1Value;
-                                    let setShowDropDownRow = setShowDropDownRow1;
-                                    let showDropDownRow = showDropDownRow1;
+                    {showLoading ? (
+                      <center>
+                        <Spinner />
+                      </center>
+                    ) : (
+                      <>
+                        <div className="card">
+                          <div className="card-header">
+                            <h3 className="card-title">RECIPIENT LIST</h3>
+                            <br />
+                            {fieldToRemove.length > 0 ? (
+                              <button
+                                className="btn btn-warning"
+                                onClick={() => {
+                                  setFieldToRemove([]);
+                                  setSelectRow1Value("");
+                                  setSelectRow2Value("");
+                                  setSelectRow3Value("");
+                                  setSelectRow4Value("");
+                                  setSelectRow5Value("");
+                                  setSelectRow6Value("");
+                                  setSelectRow7Value("");
+                                }}>
+                                Clear Row Selected
+                              </button>
+                            ) : null}
+                          </div>
 
-                                    switch (index) {
-                                      case 1:
-                                        setSelectRowValue = setSelectRow1Value;
-                                        selectedRowValue = selectRow1Value;
-                                        setShowDropDownRow = setShowDropDownRow1;
-                                        showDropDownRow = showDropDownRow1;
+                          <div className="card-body table-responsive p-0">
+                            <table className="table table-hover text-nowrap">
+                              <thead>
+                                <tr>
+                                  {excelSampleRows.length > 0
+                                    ? excelSampleRows[0].map((row, i) => {
+                                        const index = i + 1;
+                                        let excelColumns = { ...excelColumns };
+                                        let setSelectRowValue = setSelectRow1Value;
+                                        let selectedRowValue = selectRow1Value;
+                                        let setShowDropDownRow = setShowDropDownRow1;
+                                        let showDropDownRow = showDropDownRow1;
 
-                                        break;
-                                      case 2:
-                                        setSelectRowValue = setSelectRow2Value;
-                                        selectedRowValue = selectRow2Value;
-                                        setShowDropDownRow = setShowDropDownRow2;
-                                        showDropDownRow = showDropDownRow2;
-                                        break;
-                                      case 3:
-                                        setSelectRowValue = setSelectRow3Value;
-                                        selectedRowValue = selectRow3Value;
-                                        setShowDropDownRow = setShowDropDownRow3;
-                                        showDropDownRow = showDropDownRow3;
-                                        break;
-                                      case 4:
-                                        setSelectRowValue = setSelectRow4Value;
-                                        selectedRowValue = selectRow4Value;
-                                        setShowDropDownRow = setShowDropDownRow4;
-                                        showDropDownRow = showDropDownRow4;
-                                        break;
-                                      case 5:
-                                        setSelectRowValue = setSelectRow5Value;
-                                        selectedRowValue = selectRow5Value;
-                                        setShowDropDownRow = setShowDropDownRow5;
-                                        showDropDownRow = showDropDownRow5;
-                                        break;
-                                      case 6:
-                                        setSelectRowValue = setSelectRow6Value;
-                                        selectedRowValue = selectRow6Value;
-                                        setShowDropDownRow = setShowDropDownRow6;
-                                        showDropDownRow = showDropDownRow6;
-                                        break;
-                                      case 7:
-                                        setSelectRowValue = setSelectRow7Value;
-                                        selectedRowValue = selectRow7Value;
-                                        setShowDropDownRow = setShowDropDownRow7;
-                                        showDropDownRow = showDropDownRow7;
-                                        break;
-                                    }
+                                        switch (index) {
+                                          case 1:
+                                            setSelectRowValue = setSelectRow1Value;
+                                            selectedRowValue = selectRow1Value;
+                                            setShowDropDownRow = setShowDropDownRow1;
+                                            showDropDownRow = showDropDownRow1;
 
-                                    return (
-                                      <th>
-                                        {selectedRowValue !== "custom" ? (
-                                          <Dropdown
-                                            key={i + 1}
-                                            row={i + 1}
-                                            index={i}
-                                            setFieldToRemove={setFieldToRemove}
-                                            setSelectRowValue={
-                                              setSelectRowValue
-                                            }
-                                            selectedRowValue={selectedRowValue}
-                                            setShowDropDownRow={
-                                              setShowDropDownRow
-                                            }
-                                            setShowCustomField={
-                                              setShowCustomField
-                                            }
-                                            setCustomFieldValue={
-                                              handCustomFieldText
-                                            }
-                                            showDropDownRow={showDropDownRow}
-                                            fieldToRemove={fieldToRemove}
-                                            handlePushFieldToRemove={
-                                              handlePushFieldToRemove
-                                            }
-                                          />
-                                        ) : (
-                                          <>
-                                            <input
-                                              key={i + 1}
-                                              type="text"
-                                              value=""
-                                              className="form-group"
-                                              onChange={(e) =>
-                                                handCustomField(
-                                                  i,
-                                                  e.target.value
-                                                )
-                                              }
-                                              value={customColumns[i].value}
-                                            />{" "}
-                                            <a
-                                              style={{
-                                                color: "red",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() =>
-                                                setSelectRowValue("")
-                                              }>
-                                              X
-                                            </a>
-                                          </>
-                                        )}
-                                      </th>
-                                    );
-                                  })
-                                : null}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {excelSampleRows.map((row, i) => (
-                              <tr>
-                                <td>{row[0]}</td>
-                                <td>{row[1]}</td>
-                                <td>{row[2]}</td>
-                                <td>{row[3]}</td>
-                                <td>{row[4]}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                                            break;
+                                          case 2:
+                                            setSelectRowValue = setSelectRow2Value;
+                                            selectedRowValue = selectRow2Value;
+                                            setShowDropDownRow = setShowDropDownRow2;
+                                            showDropDownRow = showDropDownRow2;
+                                            break;
+                                          case 3:
+                                            setSelectRowValue = setSelectRow3Value;
+                                            selectedRowValue = selectRow3Value;
+                                            setShowDropDownRow = setShowDropDownRow3;
+                                            showDropDownRow = showDropDownRow3;
+                                            break;
+                                          case 4:
+                                            setSelectRowValue = setSelectRow4Value;
+                                            selectedRowValue = selectRow4Value;
+                                            setShowDropDownRow = setShowDropDownRow4;
+                                            showDropDownRow = showDropDownRow4;
+                                            break;
+                                          case 5:
+                                            setSelectRowValue = setSelectRow5Value;
+                                            selectedRowValue = selectRow5Value;
+                                            setShowDropDownRow = setShowDropDownRow5;
+                                            showDropDownRow = showDropDownRow5;
+                                            break;
+                                          case 6:
+                                            setSelectRowValue = setSelectRow6Value;
+                                            selectedRowValue = selectRow6Value;
+                                            setShowDropDownRow = setShowDropDownRow6;
+                                            showDropDownRow = showDropDownRow6;
+                                            break;
+                                          case 7:
+                                            setSelectRowValue = setSelectRow7Value;
+                                            selectedRowValue = selectRow7Value;
+                                            setShowDropDownRow = setShowDropDownRow7;
+                                            showDropDownRow = showDropDownRow7;
+                                            break;
+                                        }
+
+                                        return (
+                                          <th>
+                                            {selectedRowValue !== "custom" ? (
+                                              <Dropdown
+                                                key={i + 1}
+                                                row={i + 1}
+                                                index={i}
+                                                setFieldToRemove={
+                                                  setFieldToRemove
+                                                }
+                                                setSelectRowValue={
+                                                  setSelectRowValue
+                                                }
+                                                selectedRowValue={
+                                                  selectedRowValue
+                                                }
+                                                setShowDropDownRow={
+                                                  setShowDropDownRow
+                                                }
+                                                setShowCustomField={
+                                                  setShowCustomField
+                                                }
+                                                setCustomFieldValue={
+                                                  handCustomFieldText
+                                                }
+                                                showDropDownRow={
+                                                  showDropDownRow
+                                                }
+                                                fieldToRemove={fieldToRemove}
+                                                handlePushFieldToRemove={
+                                                  handlePushFieldToRemove
+                                                }
+                                              />
+                                            ) : (
+                                              <>
+                                                <input
+                                                  key={i + 1}
+                                                  type="text"
+                                                  value=""
+                                                  className="form-group"
+                                                  onChange={(e) =>
+                                                    handCustomField(
+                                                      i,
+                                                      e.target.value
+                                                    )
+                                                  }
+                                                  value={customColumns[i].value}
+                                                />{" "}
+                                                <a
+                                                  style={{
+                                                    color: "red",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() =>
+                                                    setSelectRowValue("")
+                                                  }>
+                                                  X
+                                                </a>
+                                              </>
+                                            )}
+                                          </th>
+                                        );
+                                      })
+                                    : null}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {excelSampleRows.map((row, i) => (
+                                  <tr>
+                                    <td>{row[0]}</td>
+                                    <td>{row[1]}</td>
+                                    <td>{row[2]}</td>
+                                    <td>{row[3]}</td>
+                                    <td>{row[4]}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="modal-footer justify-content-between">
-                <button
-                  onClick={() => setShowModal(false)}
-                  type="button"
-                  className="btn btn-default"
-                  data-dismiss="modal">
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={(e) => handleSubmit(e)}>
-                  Save changes and Upload
-                </button>
-              </div>
+              {!showLoading ? (
+                <div className="modal-footer justify-content-between">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    type="button"
+                    className="btn btn-default"
+                    data-dismiss="modal">
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={(e) => handleSubmit(e)}>
+                    Save changes and Upload
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
