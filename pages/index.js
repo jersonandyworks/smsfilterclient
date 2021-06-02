@@ -16,7 +16,7 @@ function Home({ uploads }) {
   const [uploadLists, setUploadLists] = useState(uploads);
   const [deleteId, setDeleteId] = useState(0);
   let confirm = showConfirm ? "show" : null;
-
+  const fileDownload = require('js-file-download');
   async function removeReportHandler() {
     const reports = uploadLists.filter((item) => item.id !== deleteId);
     setUploadLists(reports);
@@ -24,6 +24,13 @@ function Home({ uploads }) {
       headers: { Authorization: "Bearer " + cookies.userData },
     })
     setShowConfirm(false);
+  }
+
+  async function downloadReport(e,id,fileName) {
+    e.preventDefault();
+    return await axios.get("/downloads?id="+id,{
+      responseType:"blob"
+    }).then((res) => fileDownload(res.data, fileName + ".xlsx")) 
   }
   useEffect(() => {});
 
@@ -111,13 +118,13 @@ function Home({ uploads }) {
                         </Link>
                       </td>
                       <td>
-                        <Link href="http://localhost:1337/uploads/Book2_5ec323c458.xlsx">
-                          <a>
+                       
+                          <a style={{cursor:"pointer"}} onClick={(e) => downloadReport(e,file.id,file.filename + "_" + file.messages.length)}>
                             <span className="badge bg-warning">
                               Download Report
                             </span>
                           </a>
-                        </Link>
+                   
                         &nbsp;
                         <Link href="/">
                           <a>

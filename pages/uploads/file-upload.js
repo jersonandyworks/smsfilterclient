@@ -159,34 +159,34 @@ export default function FileUpload() {
           }
         )
         .catch((e) => console.log(e));
-        router.push("/")
+        // router.push("/")
     }
 
-    setSelectedFile(null);
-    setExcelColumns({});
-    setFieldToRemove([]);
-    setSelectRow1Value("");
-    setSelectRow2Value("");
-    setSelectRow3Value("");
-    setSelectRow4Value("");
-    setSelectRow5Value("");
-    setSelectRow6Value("");
-    setSelectRow7Value("");
-    setCustomColumns([
-      { column: 1, value: "" },
-      { column: 2, value: "" },
-      { column: 3, value: "" },
-      { column: 4, value: "" },
-      { column: 5, value: "" },
-      { column: 6, value: "" },
-      { column: 7, value: "" },
-      { column: 8, value: "" },
-      { column: 9, value: "" },
-      { column: 10, value: "" },
-      { column: 11, value: "" },
-      { column: 12, value: "" },
-    ]);
-    setShowModal(false);
+    // setSelectedFile(null);
+    // setExcelColumns({});
+    // setFieldToRemove([]);
+    // setSelectRow1Value("");
+    // setSelectRow2Value("");
+    // setSelectRow3Value("");
+    // setSelectRow4Value("");
+    // setSelectRow5Value("");
+    // setSelectRow6Value("");
+    // setSelectRow7Value("");
+    // setCustomColumns([
+    //   { column: 1, value: "" },
+    //   { column: 2, value: "" },
+    //   { column: 3, value: "" },
+    //   { column: 4, value: "" },
+    //   { column: 5, value: "" },
+    //   { column: 6, value: "" },
+    //   { column: 7, value: "" },
+    //   { column: 8, value: "" },
+    //   { column: 9, value: "" },
+    //   { column: 10, value: "" },
+    //   { column: 11, value: "" },
+    //   { column: 12, value: "" },
+    // ]);
+    // setShowModal(false);
     setShowLoading(false);
 
     // ,
@@ -221,7 +221,7 @@ export default function FileUpload() {
           <form>
             <div className="card-body">
               {showWarning ? (
-                <div class="alert alert-warning" role="alert">
+                <div className="alert alert-warning" role="alert">
                   {warningMessage}
                 </div>
               ) : null}
@@ -292,7 +292,7 @@ export default function FileUpload() {
                 <div className="row">
                   <div className="col-12">
                     {showWarning ? (
-                      <div class="alert alert-warning" role="alert">
+                      <div className="alert alert-warning" role="alert">
                         {warningMessage}
                       </div>
                     ) : null}
