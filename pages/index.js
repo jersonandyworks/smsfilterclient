@@ -15,6 +15,7 @@ function Home({ uploads }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [uploadLists, setUploadLists] = useState(uploads);
   const [deleteId, setDeleteId] = useState(0);
+  const [downloading, setDownloading] = useState(false);
   let confirm = showConfirm ? "show" : null;
   const fileDownload = require('js-file-download');
   async function removeReportHandler() {
@@ -28,9 +29,13 @@ function Home({ uploads }) {
 
   async function downloadReport(e,id,fileName) {
     e.preventDefault();
+    setDownloading(true)
     return await axios.get("/downloads?id="+id,{
       responseType:"blob"
-    }).then((res) => fileDownload(res.data, fileName + ".xlsx")) 
+    }).then((res) => {
+      fileDownload(res.data, fileName + ".xlsx")
+      setDownloading(false)
+    }) 
   }
   useEffect(() => {});
 
@@ -119,9 +124,9 @@ function Home({ uploads }) {
                       </td>
                       <td>
                        
-                          <a style={{cursor:"pointer"}} onClick={(e) => downloadReport(e,file.id,file.filename + "_" + file.messages.length)}>
-                            <span className="badge bg-warning">
-                              Download Report
+                          <a style={{cursor:"pointer"}} onClick={(e) => downloadReport(e,file.id,file.filename + "_" + file.messages.length) }>
+                            <span className={downloading ? "badge bg-info" : "badge bg-warning"}>
+                              {downloading ? "Downloading..." : "Download Report"}
                             </span>
                           </a>
                    
