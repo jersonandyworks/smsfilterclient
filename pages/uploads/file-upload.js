@@ -51,6 +51,7 @@ export default function FileUpload() {
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
+  const [showUploading, setShowUploading] = useState(false);
   const [fieldToRemove, setFieldToRemove] = useState([]);
   const [customFieldValue, setCustomFieldValue] = useState("");
   const [customColumns, setCustomColumns] = useState([
@@ -74,15 +75,19 @@ export default function FileUpload() {
     const xlsxCheck = `(xlsx)`;
     const reCheckXlsx = new RegExp(xlsxCheck);
     const isAnXlsx = reCheckXlsx.test(event.target.files[0].name);
-
     if (isAnXlsx) {
       setSelectedFile(event.target.files[0]);
       setIsFilePicked(true);
+      setShowUploading(true)
       const xlsRows = await readXlsxFile(event.target.files[0]);
+      console.log(xlsRows)
+
+      console.log(xlsRows);
       setSampleExcelRows(_.slice(xlsRows, 0, 3));
       setExcelRows(xlsRows);
       setShowModal(true);
       setShowWarning(false);
+      setShowUploading(false)
     } else {
       setShowWarning(true);
       setWarningMessage("Please make sure you upload only .xlsx format.");
@@ -265,6 +270,8 @@ export default function FileUpload() {
           </form>
         </div>
         {/* END UPLOAD FORM */}
+
+        {showUploading ? <Spinner/> : null}
 
         <div
           className={showModal ? "modal fade show" : ""}
@@ -458,6 +465,7 @@ export default function FileUpload() {
                                     <td>{row[2]}</td>
                                     <td>{row[3]}</td>
                                     <td>{row[4]}</td>
+                                    <td>{row[5]}</td>
                                   </tr>
                                 ))}
                               </tbody>

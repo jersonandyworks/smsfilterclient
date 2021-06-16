@@ -35,7 +35,7 @@ export default function Dropdown(props) {
               props.setSelectRowValue("firstname");
               props.handlePushFieldToRemove("firstname");
               props.setShowDropDownRow(!props.showDropDownRow);
-              props.setCustomFieldValue(props.index,"firstname");
+              props.setCustomFieldValue(props.index, "firstname");
             }}>
             First Name
           </a>
@@ -47,11 +47,107 @@ export default function Dropdown(props) {
               props.setSelectRowValue("lastname");
               props.handlePushFieldToRemove("lastname");
               props.setShowDropDownRow(!props.showDropDownRow);
-              props.setCustomFieldValue(props.index,"lastname");
+              props.setCustomFieldValue(props.index, "lastname");
             }}>
             Last Name
           </a>
         ) : null}
+        {!_.includes(props.fieldToRemove, "address") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("address");
+                props.handlePushFieldToRemove("address");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "address");
+              }}>
+              Address
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "phone") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("phone");
+                props.handlePushFieldToRemove("phone");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "phone");
+              }}>
+              Phone
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "state") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("state");
+                props.handlePushFieldToRemove("state");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "state");
+              }}>
+              State
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "county") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("county");
+                props.handlePushFieldToRemove("county");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "county");
+              }}>
+              County
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "zip") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("zip");
+                props.handlePushFieldToRemove("zip");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "zip");
+              }}>
+              Zip
+            </a>
+          </>
+        ) : null}
+
+        {!_.includes(props.fieldToRemove, "country") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("country");
+                props.handlePushFieldToRemove("country");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "country");
+              }}>
+              Country
+            </a>
+          </>
+        ) : null}
+
         {!_.includes(props.fieldToRemove, "initials") ? (
           <>
             <div className="dropdown-divider"></div>
@@ -61,7 +157,7 @@ export default function Dropdown(props) {
                 props.setSelectRowValue("initials");
                 props.handlePushFieldToRemove("initials");
                 props.setShowDropDownRow(!props.showDropDownRow);
-                props.setCustomFieldValue(props.index,"initials");
+                props.setCustomFieldValue(props.index, "initials");
               }}>
               Initials
             </a>
@@ -77,8 +173,7 @@ export default function Dropdown(props) {
                 props.setSelectRowValue("contact");
                 props.handlePushFieldToRemove("contact");
                 props.setShowDropDownRow(!props.showDropDownRow);
-                props.setCustomFieldValue(props.index,"contact");
-
+                props.setCustomFieldValue(props.index, "contact");
               }}>
               Contact
             </a>
@@ -94,8 +189,7 @@ export default function Dropdown(props) {
                 props.setSelectRowValue("link");
                 props.handlePushFieldToRemove("link");
                 props.setShowDropDownRow(!props.showDropDownRow);
-                props.setCustomFieldValue(props.index,"link");
-
+                props.setCustomFieldValue(props.index, "link");
               }}>
               Link
             </a>

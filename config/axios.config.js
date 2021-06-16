@@ -1,5 +1,5 @@
 import axios from "axios";
-
+console.log("host: ", process.env.HOST)
 const instance = axios.create({
   baseURL: "http://178.128.221.120:1337",
   "Content-Type": "application/x-www-form-urlencoded",
