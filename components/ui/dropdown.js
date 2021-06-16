@@ -52,6 +52,23 @@ export default function Dropdown(props) {
             Last Name
           </a>
         ) : null}
+
+        {!_.includes(props.fieldToRemove, "contact") ? (
+          <>
+            <div className="dropdown-divider"></div>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                props.setSelectRowValue("contact");
+                props.handlePushFieldToRemove("contact");
+                props.setShowDropDownRow(!props.showDropDownRow);
+                props.setCustomFieldValue(props.index, "contact");
+              }}>
+              Phone Number
+            </a>
+          </>
+        ) : null}
+
         {!_.includes(props.fieldToRemove, "address") ? (
           <>
             <div className="dropdown-divider"></div>
@@ -64,22 +81,6 @@ export default function Dropdown(props) {
                 props.setCustomFieldValue(props.index, "address");
               }}>
               Address
-            </a>
-          </>
-        ) : null}
-
-        {!_.includes(props.fieldToRemove, "phone") ? (
-          <>
-            <div className="dropdown-divider"></div>
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                props.setSelectRowValue("phone");
-                props.handlePushFieldToRemove("phone");
-                props.setShowDropDownRow(!props.showDropDownRow);
-                props.setCustomFieldValue(props.index, "phone");
-              }}>
-              Phone
             </a>
           </>
         ) : null}
@@ -160,22 +161,6 @@ export default function Dropdown(props) {
                 props.setCustomFieldValue(props.index, "initials");
               }}>
               Initials
-            </a>
-          </>
-        ) : null}
-
-        {!_.includes(props.fieldToRemove, "contact") ? (
-          <>
-            <div className="dropdown-divider"></div>
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                props.setSelectRowValue("contact");
-                props.handlePushFieldToRemove("contact");
-                props.setShowDropDownRow(!props.showDropDownRow);
-                props.setCustomFieldValue(props.index, "contact");
-              }}>
-              Contact
             </a>
           </>
         ) : null}
